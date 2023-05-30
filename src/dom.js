@@ -26,12 +26,13 @@ function designGame(){
     const boardTwo = new Gameboard();
     let playerOne = new Player(boardOne);
     let playerTwo = new Player(boardTwo, playerOne);
+    gameContainer.innerHTML = '';
+    document.querySelector('.game-message').textContent = '';
     designBoards(playerOne);
     return new Game([playerOne, playerTwo], playerOne)
 }
 
 export function designBoards(player){
-    let boardObject = player.board;
     let playerBoard = createPlayerBoard();
     playerBoard.classList.add('player')
     gameContainer.appendChild(playerBoard);
@@ -41,8 +42,6 @@ export function designBoards(player){
     gameContainer.appendChild(opponentBoard);
     addEventListenersOnOpponentBoard(player);
     createOverlayOnOpponentBoard();
-    // console.log(updatePlayerBoard(boardObject));
-    // console.log(updateOpponentBoard(player.opponent));
 }
 
 function designDividerContainer(player){
@@ -59,21 +58,31 @@ function designDividerContainer(player){
             errorMessage.textContent = 'No ships were placed!';
             return;
         } else {
-            gameButton.textContent = 'CONTINUE';
             dividerMessageBox.textContent = window.currentGame.playerTurn === player ? `YOU GO FIRST. PRESS CONTINUE TO START` : 'OPPONENT GOES FIRST.';
-            let newGameButton = gameButton.cloneNode(true);
-            gameButton.parentNode.replaceChild(newGameButton, gameButton);
-            errorMessage.textContent = '';
-            placeShipsDiv.style.display = 'none';
-            newGameButton.addEventListener('click',()=>{
+            replaceGameButton(gameButton, 'CONTINUE', ()=>{
                 window.currentGame.playNextTurn();
                 updatePlayerBoard(player.board);
             })
+            errorMessage.textContent = '';
+            placeShipsDiv.style.display = 'none';
+            
         }
     })
     dividerContainer.appendChild(gameButton);
     return dividerContainer;
 }
+
+function replaceGameButton(original, text, eventListenerCallback){
+    original.style.display = '';
+    original.textContent = text;
+    let newGameButton = original.cloneNode(true);
+    original.parentNode.replaceChild(newGameButton, original);
+    if (eventListenerCallback){
+        newGameButton.addEventListener('click',eventListenerCallback)
+    }
+    return newGameButton
+}
+
 
 function createPlaceShipForm(player){
     let placeShipDiv = createElement('div','place-ship-form-container','');
@@ -112,7 +121,6 @@ function placeShipOnPlayerBoard(player){
             xCoords = Math.floor(Math.random()*10);
             yCoords = Math.floor(Math.random()*10);
             direction = ['right','down','left','up'][Math.floor(Math.random()*4)];
-            console.log(player.opponent.board)
         } while (player.opponent.board.placeShip(newOpponentShip,[yCoords, xCoords], direction))
     }
 
@@ -132,7 +140,9 @@ function addEventListenersOnOpponentBoard(player){
             createOverlayOnOpponentBoard();
             if (player.opponent.board.allShipsSunk()){
                 window.currentGame.winner = player;
-                document.querySelector('.divider-message').textContent = 'YOU HAVE WON! YOU HAVE SUNK ALL OF YOUR OPPONENT\'S SHIPS!'
+                document.querySelector('.divider-message').textContent = 'YOU HAVE WON! YOU HAVE SUNK ALL OF YOUR OPPONENT\'S SHIPS!';
+                const gameButton = document.querySelector('.game-button');
+                replaceGameButton(gameButton, 'RESTART', designGame);
             } else { 
                 window.currentGame.playNextTurn();
             }

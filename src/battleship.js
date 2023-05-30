@@ -199,7 +199,6 @@ export class Game{
     }
 
     playNextTurn = () => {
-        console.log('playingturn')
         const dividerMessage = document.querySelector('.divider-message');
         const gameButton = document.querySelector('.game-button');
         const opponentBoardOverlay = document.querySelector('.board-overlay');
