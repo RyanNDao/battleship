@@ -124,20 +124,22 @@ export class Gameboard {
         let tile = this.tiles[coords[0]][coords[1]]
         if (!tile){
             console.error('Coordinates were not valid!')
-            return false
+            return null;
         }
         if (JSON.stringify(this.getPossibleMoves()).indexOf(JSON.stringify(coords)) === -1) {
             console.error('This tile was already shot!')
-            return false
+            return null;
         } else if (tile instanceof Ship){
             console.log('Shot hit a ship!', coords)
             tile.hit()
             this.shotTiles.push(coords);
             tile.hitTiles.push(coords);
+            return true;
         } else {
             console.log('Shot missed!', coords)
             this.shotTiles.push(coords)
             this.tiles[coords[0]][coords[1]] = 'X';
+            return false;
         }
     }
 
@@ -183,14 +185,43 @@ export class Player{
             let possibleMoves = this.opponent.board.getPossibleMoves()
             coords = possibleMoves[Math.floor(Math.random()*possibleMoves.length)]
         }
-        this.opponent.board.receiveAttack(coords);
-        return this.opponent;
+        let shot = this.opponent.board.receiveAttack(coords);
+        return shot;
     }
 }
 
 export class Game{
-    constructor(players){
-        this.players = players
+    constructor(players, humanPlayer){
+        this.players = players;
         this.playerTurn = players[Math.floor(Math.random()*2)];
+        this.humanPlayer = humanPlayer;
+        this.winner = undefined;
+    }
+
+    playNextTurn = () => {
+        console.log('playingturn')
+        const dividerMessage = document.querySelector('.divider-message');
+        const gameButton = document.querySelector('.game-button');
+        const opponentBoardOverlay = document.querySelector('.board-overlay');
+        const opponentBoard = document.querySelector('.opponent.board');
+        if (this.humanPlayer.board.allShipsSunk()){
+            dividerMessage.textContent = 'OPPONENT HAS WON! ALL YOUR SHIPS WERE SUNK!';
+            this.winner = this.humanPlayer.opponent;
+            return null
+        }
+        if (this.playerTurn === this.humanPlayer){
+            document.querySelector('.game-message').textContent = window.opponentShotResults;
+            dividerMessage.textContent = 'IT IS NOW YOUR TURN!';
+            opponentBoard.removeChild(opponentBoardOverlay);
+            gameButton.style.display = 'none';
+            this.playerTurn = this.players[1];
+            return undefined;
+        } else {
+            dividerMessage.textContent = 'IT IS NOW OPPONENT\'S TURN!';
+            this.playerTurn = this.players[0];
+            gameButton.style.display = '';
+            let shot = this.humanPlayer.opponent.makeMove();
+            window.opponentShotResults = `Opponent\'s shot has ${shot ? 'shot your ship!' : 'missed!'}`;
+        }
     }
 }

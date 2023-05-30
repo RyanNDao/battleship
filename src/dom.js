@@ -1,15 +1,18 @@
 import { Ship, Gameboard, Player, Game } from './battleship.js'
-const mainContainer = document.querySelector('.main-container')
-const gameContainer = document.querySelector('.game-container')
+const gameContainer = document.querySelector('.game-container');
+const mainContainer = document.querySelector('.main-container');
+const gameMessage = document.querySelector('.game-message');
+import './style.css';
 
-export function designStartScreen(){
+function designStartScreen(){
     let startOverlay = createElement('div', 'start-overlay','');
     let startScreen = createElement('div','start-screen','')
     let startMessage = createElement('p','start-message','CLICK THE BUTTON TO BEGIN THE GAME!');
     let startButton = createElement('button','start-button','START GAME!');
     startButton.addEventListener('click',()=>{
-        designGame();
-    })
+        let newGame = designGame();
+        window.currentGame = newGame;
+    });
     startOverlay.appendChild(startScreen);
     startScreen.appendChild(startMessage);
     startScreen.appendChild(startButton);
@@ -24,8 +27,8 @@ function designGame(){
     let playerOne = new Player(boardOne);
     let playerTwo = new Player(boardTwo, playerOne);
     designBoards(playerOne);
+    return new Game([playerOne, playerTwo], playerOne)
 }
-
 
 export function designBoards(player){
     let boardObject = player.board;
@@ -38,8 +41,8 @@ export function designBoards(player){
     gameContainer.appendChild(opponentBoard);
     addEventListenersOnOpponentBoard(player);
     createOverlayOnOpponentBoard();
-    console.log(updatePlayerBoard(boardObject));
-    console.log(updateOpponentBoard(player.opponent));
+    // console.log(updatePlayerBoard(boardObject));
+    // console.log(updateOpponentBoard(player.opponent));
 }
 
 function designDividerContainer(player){
@@ -56,7 +59,16 @@ function designDividerContainer(player){
             errorMessage.textContent = 'No ships were placed!';
             return;
         } else {
-            dividerMessageBox.textContent = `OPPONENT HAS PLACED ${player.opponent.board.shipsList.length} SHIPS!`
+            gameButton.textContent = 'CONTINUE';
+            dividerMessageBox.textContent = window.currentGame.playerTurn === player ? `YOU GO FIRST. PRESS CONTINUE TO START` : 'OPPONENT GOES FIRST.';
+            let newGameButton = gameButton.cloneNode(true);
+            gameButton.parentNode.replaceChild(newGameButton, gameButton);
+            errorMessage.textContent = '';
+            placeShipsDiv.style.display = 'none';
+            newGameButton.addEventListener('click',()=>{
+                window.currentGame.playNextTurn();
+                updatePlayerBoard(player.board);
+            })
         }
     })
     dividerContainer.appendChild(gameButton);
@@ -114,19 +126,21 @@ function addEventListenersOnOpponentBoard(player){
         let yCoords = Number(tileCoordsString.slice(18,19));
         let coords = [yCoords, xCoords];
         tileElement.addEventListener('click', ()=>{
-            player.makeMove(coords);
+            let shot = player.makeMove(coords);
+            gameMessage.textContent = `Your shot at (${coords}) has ${shot ? 'hit the opponent\'s ship!' : 'missed!'}`
             updateOpponentBoard(player.opponent);
             createOverlayOnOpponentBoard();
-            triggerOpponentTurn()
+            if (player.opponent.board.allShipsSunk()){
+                window.currentGame.winner = player;
+                document.querySelector('.divider-message').textContent = 'YOU HAVE WON! YOU HAVE SUNK ALL OF YOUR OPPONENT\'S SHIPS!'
+            } else { 
+                window.currentGame.playNextTurn();
+            }
+            
         }, {
             once: true
         })
     })
-}
-
-function triggerOpponentTurn(){
-    const dividerMessage = document.querySelector('p.divider-message');
-    dividerMessage.textContent = 'IT IS NOW THE OPPONENT\'S TURN!';
 }
 
 function createOverlayOnOpponentBoard(){
@@ -234,7 +248,7 @@ function convertPlayerBoardToIcons(board){
     return iconBoard
 }
 
-function createElement(type, classes, text){
+export function createElement(type, classes, text){
     let element = document.createElement(type);
     if (classes.length !== 0){
         typeof(classes) === 'object' ? element.classList.add(...classes) : element.classList.add(classes);
@@ -265,3 +279,5 @@ function createFormDropdown(id='',name='',required=false, optionValues=[], optio
     formInputDiv.appendChild(formDropdown);
     return formInputDiv;
 }
+
+designStartScreen();

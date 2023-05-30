@@ -5,7 +5,7 @@ module.exports = {
   mode: 'development',
   devtool: 'inline-source-map',
   entry: {
-    game: './src/game.js',
+    dom: './src/dom.js',
     battleship: './src/battleship.js',
   },
   output: {
