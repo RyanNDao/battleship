@@ -1,0 +1,189 @@
+body{
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    background-size:100% 100%;
+}
+
+.main-container{
+    background-color: rgba(128, 128, 128, 0.911);
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-rows: repeat(7, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.header{
+    grid-column: 1 / 6;
+    grid-row: 1;
+}
+
+.message-container{
+    grid-column: 1 / 6;
+    grid-row: 7; 
+}
+
+.game-container{
+    grid-column: 1 / 6;
+    grid-row: 2 / 7;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.divider-container{
+    width: 20%;
+    height: 100%;
+    /*background-color: green;*/
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.divider-message, .start-message{
+    margin: 0;
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: rgba(14, 228, 228, 0.801);
+    text-align: center;
+}
+
+.divider-container > button, .start-button{
+    width: 75%;
+    height: 45px;
+    border-radius: 5px;
+    font-size: 2vh;
+    font-weight: bold;
+    background-color: rgb(14, 228, 228);
+    color: rgba(139, 0, 0, 0.849);
+}
+
+p.start-message, button.start-button{
+    color: rgba(17, 20, 192, 0.959);
+} 
+
+.board{
+    aspect-ratio: 1 / 1;
+    width: 35%;
+    display: grid;
+    grid-template-rows: repeat(65, 1fr);
+    border: 3px solid rgb(20, 20, 201);
+}
+
+.player.board{
+    background-image: url(./images/battleship-background.jpg);
+    background-size: cover;
+}
+
+.board-row{
+    display: grid;
+    grid-template-columns: repeat(65, 1fr);
+    grid-row: span 5;
+}
+
+.board-tile{
+    grid-column: span 5;
+    background-color: rgba(173, 216, 230, 0.555);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(12px, calc(5vh - 14px), 40px);
+    font-weight: bold;
+}
+
+.opponent.board .board-tile[class$="_gametile"]{
+    cursor: pointer;
+}
+
+.player.board .board-tile.ship-tile{
+    color: blue;
+}
+
+.player.board .board-tile.missed-tile,
+.opponent.board .board-tile.shot-tile{
+    color: green;
+}
+
+.player.board .board-tile.shot-tile,
+.opponent.board .board-tile.missed-tile{
+    color: red;
+}
+
+.vertical-line, .horizontal-line{
+    background-color: rgb(44, 41, 41);
+}
+
+.opponent.board{
+    position: relative;
+}
+
+.board-overlay, .start-overlay{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(136, 123, 123, 0.527);
+}
+
+.start-overlay{
+    background-image: url(./images/battleship-background.jpg);
+    background-size: cover;
+}
+
+.start-screen{
+    position: absolute;
+    height: 60%;
+    width: 40%;
+    top: 20%;
+    left: 30%;
+    background-color: rgba(64, 92, 53, 0.658);
+    box-shadow: 3px 2px 2px lightcoral;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 10px 30px 10px 30px;
+}
+
+.place-ship-form-container{
+    width: 100%;
+    padding: 30px 10px;
+    border: 3px solid black;
+    background-color: rgba(136, 84, 84, 0.589);
+}
+
+.place-ship-form{
+    display: flex;
+    flex-direction: column;
+}
+
+.place-ship-button{
+    margin-top: 30px;
+    align-self: center;
+    height: 30px;
+    width: 90%;
+    font-weight: bold;
+}
+
+.form-input{
+    display: flex;
+    gap: 6px;
+    font-size: 1.5rem;
+    color: rgb(30, 33, 207);
+    font-weight: 600;
+    justify-content: space-between;
+}
+
+.form-input > select{
+    font-size: 1.15rem;
+}
+
+.form-error{
+    text-align: center;
+    align-self: center;
+    font-weight: bold;
+    color: rgb(117, 8, 8);
+    font-size: 1.75rem;
+    margin: 0;
+}
