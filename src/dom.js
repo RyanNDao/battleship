@@ -135,7 +135,7 @@ function addEventListenersOnOpponentBoard(player){
         let coords = [yCoords, xCoords];
         tileElement.addEventListener('click', ()=>{
             let shot = player.makeMove(coords);
-            gameMessage.textContent = `Your shot at (${coords}) has ${shot ? 'hit the opponent\'s ship!' : 'missed!'}`
+            gameMessage.textContent = `Your shot at (${[xCoords, yCoords]}) has ${shot ? 'hit the opponent\'s ship!' : 'missed!'}`
             updateOpponentBoard(player.opponent);
             createOverlayOnOpponentBoard();
             if (player.opponent.board.allShipsSunk()){
